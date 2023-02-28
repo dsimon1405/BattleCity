@@ -83,6 +83,8 @@ int main(int argc, char** argv)
             return -1;
         }
 
+        resourceManager.LoadTexture("DefaultTexture", "resources\\textures\\map_16x16.png");
+
         // передача в память видеокарты информации (позиция, цвет) для созданных шейдеров
         GLuint points_vbo = 0;  // vertex buffer object
         glGenBuffers(1, &points_vbo);   // генерация буфера (функция вернёт значение в points_vbo)

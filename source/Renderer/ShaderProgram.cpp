@@ -42,7 +42,7 @@ namespace Renderer
 		glDeleteShader(fragmentShaderID);
 	}
 
-	ShaderProgram::ShaderProgram(ShaderProgram&& shaderProgram)
+	ShaderProgram::ShaderProgram(ShaderProgram&& shaderProgram) noexcept
 	{
 		programID = shaderProgram.programID;
 		program_isCompiled = shaderProgram.program_isCompiled;
@@ -51,7 +51,7 @@ namespace Renderer
 		shaderProgram.program_isCompiled = false;
 	}
 
-	ShaderProgram& ShaderProgram::operator=(ShaderProgram&& shaderProgram)
+	ShaderProgram& ShaderProgram::operator=(ShaderProgram&& shaderProgram) noexcept
 	{
 		glDeleteProgram(programID);
 		programID = shaderProgram.programID;

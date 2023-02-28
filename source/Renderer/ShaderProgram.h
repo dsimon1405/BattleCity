@@ -9,13 +9,12 @@ namespace Renderer
 	{
 	public:
 		ShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
-		ShaderProgram(ShaderProgram&& shaderProgram);
-		ShaderProgram& operator=(ShaderProgram&& shaderProgram);
+		ShaderProgram(ShaderProgram&& shaderProgram) noexcept;
+		ShaderProgram& operator=(ShaderProgram&& shaderProgram) noexcept;
 		~ShaderProgram();
 		bool IsCompiled() const { return program_isCompiled; }
 		void Use() const;
 
-		// запрещаем конструкторы
 		ShaderProgram() = delete;
 		ShaderProgram(ShaderProgram&) = delete;
 		ShaderProgram& operator=(const ShaderProgram&) = delete;

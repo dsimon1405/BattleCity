@@ -3,7 +3,13 @@ cmake_minimum_required(VERSION 3.25.2 FATAL_ERROR)
 set(PROJECT_NAME BattleCity)
 project(${PROJECT_NAME})
 
-add_executable(BattleCity source/main.cpp)
+set(CMAKE_CXX_STANDART 17)
+
+add_executable(${PROJECT_NAME} 
+	source/main.cpp
+	source/Renderer/ShaderProgram.cpp
+	source/Renderer/ShaderProgram.h
+)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)

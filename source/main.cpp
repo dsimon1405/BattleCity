@@ -1,17 +1,20 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec2.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
 
 #include "Renderer/ShaderProgram.h"
 #include "Resources/ResourceManager.h"
 #include "Renderer/Texture2D.h"
+#include "Renderer/Sprite.h"
 
 GLfloat point[] = {
-      0.0f,  0.5f, 0.0f,
-      0.5f, -0.5f, 0.0f,
-    - 0.5f, -0.5f, 0.0f
+      0.0f,  50.f, 0.0f,
+      50.f, -50.f, 0.0f,
+    - 50.f, -50.f, 0.0f
 };
 
 GLfloat colors[] = {
@@ -91,7 +94,17 @@ int main(int argc, char** argv)
             return -1;
         }
 
+        auto pSpriteShaderProgram = resourceManager.LoadShaders("SpriteShader", "resources\\shaders\\vSprite.txt", "resources\\shaders\\fSprite.txt");
+        if (!pSpriteShaderProgram)
+        {
+            std::cerr << "Can't create shader program!" << "SpriteShader" << std::endl;
+            return -1;
+        }
+
         auto tex = resourceManager.LoadTexture("DefaultTexture", "resources\\textures\\map_16x16.png");
+
+        auto pSprite = resourceManager.LoadSprite("NewSprite", "DefaultTexture", "SpriteShader", 50, 100);
+        pSprite->SetPosition(glm::vec2(300, 100));
 
         // передача в память видеокарты информации (позиция, цвет) для созданных шейдеров
         GLuint points_vbo = 0;  // vertex buffer object
@@ -128,6 +141,19 @@ int main(int argc, char** argv)
         pDefaultShaderProgram->Use();
         pDefaultShaderProgram->SetInt("tex", 0);
 
+        glm::mat4 modelMatrix_1 = glm::mat4(1.f);
+        modelMatrix_1 = glm::translate(modelMatrix_1, glm::vec3(50.f, 50.f, 0.f));
+
+        glm::mat4 modelMatrix_2 = glm::mat4(1.f);
+        modelMatrix_2 = glm::translate(modelMatrix_2, glm::vec3(590.f, 200.f, 0.f));
+
+        glm::mat4 projectionMatrix = glm::ortho(0.f, windowSize.x, 0.f, windowSize.y, -100.f, 100.f);
+
+        pDefaultShaderProgram->SetMatrix4("projectionMat", projectionMatrix);
+
+        pSpriteShaderProgram->Use();
+        pSpriteShaderProgram->SetInt("tex", 0);
+        pSpriteShaderProgram->SetMatrix4("projectionMat", projectionMatrix);
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(pWindow))
@@ -139,8 +165,14 @@ int main(int argc, char** argv)
             pDefaultShaderProgram->Use();
             glBindVertexArray(vao);     // биндим эррей объект который хотим отрисовать, на данный момент он всего 1
             tex->Bind();
+
+            pDefaultShaderProgram->SetMatrix4("modelMat", modelMatrix_1);
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
+            pDefaultShaderProgram->SetMatrix4("modelMat", modelMatrix_2);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+
+            pSprite->Render();
 
             /* Swap front and back buffers */
             glfwSwapBuffers(pWindow);

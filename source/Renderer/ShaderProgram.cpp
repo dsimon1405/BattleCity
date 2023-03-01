@@ -1,10 +1,12 @@
 #include "ShaderProgram.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 #include <iostream>
 
 namespace Renderer
 {
-	ShaderProgram::ShaderProgram(const std::string& vertexShader, const std::string& fragmentShader)
+	ShaderProgram::ShaderProgram(const std::string& vertexShader,const std::string& fragmentShader)
 	{
 		GLuint vertexShaderID;
 		if (!CreateShader(vertexShader, GL_VERTEX_SHADER, vertexShaderID))
@@ -77,6 +79,11 @@ namespace Renderer
 		glUniform1i(glGetUniformLocation(programID, name.c_str()), value);
 	}
 
+	void ShaderProgram::SetMatrix4(const std::string& name, const glm::mat4& matrix)
+	{
+		glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+
 	bool ShaderProgram::CreateShader(const std::string& source, const GLenum shaderType, GLuint& shaderID)
 	{
 		shaderID = glCreateShader(shaderType);
@@ -95,6 +102,4 @@ namespace Renderer
 		}
 		return true;
 	}
-
-	
 }

@@ -5,6 +5,7 @@
 
 #include "Renderer/ShaderProgram.h"
 #include "Resources/ResourceManager.h"
+#include "Renderer/Texture2D.h"
 
 GLfloat point[] = {
       0.0f,  0.5f, 0.0f,
@@ -16,6 +17,12 @@ GLfloat colors[] = {
     1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 1.0f
+};
+
+GLfloat texCoord[] = {
+    0.5f, 1.0f,
+    1.0f, 0.0f,
+    0.0f, 0.0f
 };
 
 int windowSizeX = 640, windowSizeY = 480;
@@ -83,7 +90,7 @@ int main(int argc, char** argv)
             return -1;
         }
 
-        resourceManager.LoadTexture("DefaultTexture", "resources\\textures\\map_16x16.png");
+        auto tex = resourceManager.LoadTexture("DefaultTexture", "resources\\textures\\map_16x16.png");
 
         // передача в память видеокарты информации (позиция, цвет) для созданных шейдеров
         GLuint points_vbo = 0;  // vertex buffer object
@@ -95,6 +102,11 @@ int main(int argc, char** argv)
         glGenBuffers(1, &colors_vbo);
         glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
         glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW); // перемещает данные из оператвной памяти процессора в память видеокарты
+
+        GLuint texCoord_vbo = 0;
+        glGenBuffers(1, &texCoord_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, texCoord_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(texCoord), texCoord, GL_STATIC_DRAW);
 
         GLuint vao = 0;     // vertex array object
         glGenVertexArrays(1, &vao);
@@ -108,6 +120,13 @@ int main(int argc, char** argv)
         glBindBuffer(GL_ARRAY_BUFFER, colors_vbo);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
+        glEnableVertexAttribArray(2);
+        glBindBuffer(GL_ARRAY_BUFFER, texCoord_vbo);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+        pDefaultShaderProgram->Use();
+        pDefaultShaderProgram->SetInt("tex", 0);
+
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(pWindow))
@@ -118,6 +137,7 @@ int main(int argc, char** argv)
 
             pDefaultShaderProgram->Use();
             glBindVertexArray(vao);     // биндим эррей объект который хотим отрисовать, на данный момент он всего 1
+            tex->Bind();
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
 

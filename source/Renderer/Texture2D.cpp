@@ -2,7 +2,8 @@
 
 namespace Renderer
 {
-	Renderer::Texture2D::Texture2D(const GLuint width, const GLuint height, const unsigned char* data, const unsigned int channels, const GLenum filter, const GLenum wrapMode) : memoryWidth(width), memoryHeight(height)
+
+	Texture2D::Texture2D(const GLuint width, const GLuint height, const unsigned char* data, const unsigned int channels, const GLenum filter, const GLenum wrapMode) : memoryWidth(width), memoryHeight(height)
 	{
 		switch (channels)
 		{
@@ -15,13 +16,15 @@ namespace Renderer
 		}
 
 		glGenTextures(1, &memoryID);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, memoryID);
 		glTexImage2D(GL_TEXTURE_2D, 0, memoryMode, memoryWidth, memoryHeight, 0, memoryMode, GL_UNSIGNED_BYTE, data);
-		
-		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
-		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
-		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-		glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
+		glGenerateMipmap(GL_TEXTURE_2D);
 
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+
 #include <glad/glad.h>
 #include <glm/vec2.hpp>
 
@@ -25,7 +28,7 @@ namespace Renderer
 		Sprite(const Sprite&) = delete;
 		Sprite& operator=(const Sprite&) = delete;
 
-		virtual void Render() const;
+		virtual void Render();
 		void SetPosition(const glm::vec2& position);
 		void SetSize(const glm::vec2& size);
 		void SetRotation(const float rotation);
@@ -37,7 +40,9 @@ namespace Renderer
 		glm::vec2 m_size;
 		float m_rotation;
 		GLuint m_VAO;
-		GLuint m_vertexCoordsVBO;
-		GLuint m_textureCoordsVBO;
+
+		VertexBuffer m_vertexCoordsBuffer;
+		VertexBuffer m_textureCoordsBuffer;
+		IndexBuffer m_indexBuffer;
 	};
 }

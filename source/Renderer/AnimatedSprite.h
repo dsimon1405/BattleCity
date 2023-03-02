@@ -18,7 +18,7 @@ namespace Renderer
 			const float rotation = 0.f);
 
 		void InsertState(std::string state, std::vector<std::pair<std::string, uint64_t>> subTexturesDuration);
-		void Render() const override;
+		void Render() override;
 		void SetState(const std::string& newState);
 		void Update(const uint64_t delta);
 

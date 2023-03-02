@@ -14,6 +14,8 @@ add_executable(${PROJECT_NAME}
 	source/Renderer/Texture2D.h
 	source/Renderer/Sprite.cpp
 	source/Renderer/Sprite.h
+	source/Renderer/AnimatedSprite.h
+	source/Renderer/AnimatedSprite.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

@@ -5,11 +5,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
+#include <chrono>
 
 #include "Renderer/ShaderProgram.h"
 #include "Resources/ResourceManager.h"
 #include "Renderer/Texture2D.h"
 #include "Renderer/Sprite.h"
+#include "Renderer/AnimatedSprite.h"
 
 GLfloat point[] = {
       0.0f,  50.f, 0.0f,
@@ -31,6 +33,8 @@ GLfloat texCoord[] = {
 
 glm::vec2 windowSize(640, 480);
 
+bool isEagle = false;
+
 void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
     windowSize.x = width;
@@ -43,6 +47,11 @@ void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(pWindow, GL_TRUE);
+    }
+
+    if (key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+    {
+        isEagle = !isEagle;
     }
 }
 
@@ -100,14 +109,66 @@ int main(int argc, char** argv)
             std::cerr << "Can't create shader program!" << "SpriteShader" << std::endl;
             return -1;
         }
-
+        
         auto tex = resourceManager.LoadTexture("DefaultTexture", "resources\\textures\\map_16x16.png");
 
-        std::vector<std::string> subTexturesNames = { "block", "topBlock", "bottomBlock", "leftBlock", "rightBlock", "topLeftBlock", "topRightBlock", "bottomLeftBlock", "bottomRightBlock", "beton"};
+        std::vector<std::string> subTexturesNames =
+        {
+            "block",
+            "topBlock",
+            "bottomBlock",
+            "leftBlock",
+            "rightBlock",
+            "topLeftBlock",
+            "topRightBlock",
+            "bottomLeftBlock",
+
+            "bottomRightBlock",
+            "beton",
+            "topBeton",
+            "bottomBeton",
+            "leftBetom",
+            "rightBetom",
+            "topLeftBetom",
+            "topRightBetom",
+
+            "bottomLeftBetom",
+            "bottomRightBetom",
+            "water1",
+            "water2",
+            "water3",
+            "trees",
+            "ice",
+            "wall",
+
+            "eagle",
+            "deadEagle",
+            "nothing",
+            "respawn1",
+            "respawn2",
+            "respawn3",
+            "respawn4",
+        };
+
         auto pTextureAtlas = resourceManager.LoadTextureAtlas("DefaultTextureAtlas", "resources\\textures\\map_16x16.png", std::move(subTexturesNames), 16, 16);
 
         auto pSprite = resourceManager.LoadSprite("NewSprite", "DefaultTextureAtlas", "SpriteShader", 100, 100, "beton");
         pSprite->SetPosition(glm::vec2(300, 100));
+
+        auto pAnimatedSprite = resourceManager.LoadAnimatedSprite("NewAnimatedSprite", "DefaultTextureAtlas", "SpriteShader", 100, 100, "beton");
+        pAnimatedSprite->SetPosition(glm::vec2(300, 300));
+        std::vector<std::pair<std::string, uint64_t>> waterState;
+        waterState.emplace_back(std::make_pair<std::string, uint64_t>("water1", 1000000000));
+        waterState.emplace_back(std::make_pair<std::string, uint64_t>("water2", 1000000000));
+        waterState.emplace_back(std::make_pair<std::string, uint64_t>("water3", 1000000000));
+        std::vector<std::pair<std::string, uint64_t>> eagleState;
+        eagleState.emplace_back(std::make_pair<std::string, uint64_t>("eagle", 1000000000));
+        eagleState.emplace_back(std::make_pair<std::string, uint64_t>("deadEagle", 1000000000));
+
+        pAnimatedSprite->InsertState("waterState", std::move(waterState));
+        pAnimatedSprite->InsertState("eagleState", std::move(eagleState));
+
+        pAnimatedSprite->SetState("waterState");
 
         // передача в память видеокарты информации (позиция, цвет) для созданных шейдеров
         GLuint points_vbo = 0;  // vertex buffer object
@@ -158,9 +219,26 @@ int main(int argc, char** argv)
         pSpriteShaderProgram->SetInt("tex", 0);
         pSpriteShaderProgram->SetMatrix4("projectionMat", projectionMatrix);
 
+        auto lastTime = std::chrono::high_resolution_clock::now();
+
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(pWindow))
         {
+            auto currentTime = std::chrono::high_resolution_clock::now();
+            uint64_t duration = std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastTime).count();
+            lastTime = currentTime;
+
+            pAnimatedSprite->Update(duration);
+
+            if (isEagle)
+            {
+                pAnimatedSprite->SetState("waterState");
+            }
+            else
+            {
+                pAnimatedSprite->SetState("eagleState");
+            }
+
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT);
 
@@ -176,6 +254,9 @@ int main(int argc, char** argv)
             glDrawArrays(GL_TRIANGLES, 0, 3);
 
             pSprite->Render();
+
+            pAnimatedSprite->Render();
+
 
             /* Swap front and back buffers */
             glfwSwapBuffers(pWindow);

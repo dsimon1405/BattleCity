@@ -1,7 +1,7 @@
 #include "VertexBufferLayout.h"
 #pragma once
 
-namespace Renderer
+namespace RenderEngine
 {
 	VertexBufferLayout::VertexBufferLayout()
 		: m_stride(0)

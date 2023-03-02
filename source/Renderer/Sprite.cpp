@@ -2,11 +2,12 @@
 
 #include "ShaderProgram.h"
 #include "Texture2D.h"
+#include "Renderer.h"
 
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace Renderer
+namespace RenderEngine
 {
 	Sprite::Sprite(std::shared_ptr<Texture2D> pTexture,
 				   std::string initialSubTexture,
@@ -59,7 +60,7 @@ namespace Renderer
 		textureCoordsLayout.AddElementLayoutFloat(2, false);
 		m_vertexArray.AddBuffer(m_textureCoordsBuffer, textureCoordsLayout);
 
-		m_indexBuffer.Init(indexes, 6 * sizeof(GLuint));
+		m_indexBuffer.Init(indexes, 6);
 
 		m_vertexArray.Unbind();
 		m_indexBuffer.Unbind();
@@ -69,7 +70,7 @@ namespace Renderer
 	{
 	}
 
-	void Renderer::Sprite::Render()
+	void RenderEngine::Sprite::Render()
 	{
 		m_pShaderProgram->Use();
 
@@ -81,14 +82,12 @@ namespace Renderer
 		model = glm::translate(model, glm::vec3(-0.5f * m_size.x, -0.5f * m_size.y, 0.f));
 		model = glm::scale(model, glm::vec3(m_size, 1.f));
 
-		m_vertexArray.Bind();
 		m_pShaderProgram->SetMatrix4("modelMat", model);
 
 		glActiveTexture(GL_TEXTURE0);
 		m_pTexture->Bind();
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-		m_vertexArray.Unbind();
+		Renderer::Draw(m_vertexArray, m_indexBuffer, *m_pShaderProgram);
 	}
 
 	void Sprite::SetPosition(const glm::vec2& position)

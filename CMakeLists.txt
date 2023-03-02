@@ -20,6 +20,10 @@ add_executable(${PROJECT_NAME}
 	source/Renderer/VertexBuffer.cpp
 	source/Renderer/IndexBuffer.h
 	source/Renderer/IndexBuffer.cpp
+	source/Renderer/VertexArray.h
+	source/Renderer/VertexArray.cpp
+	source/Renderer/VertexBufferLayout.h
+	source/Renderer/VertexBufferLayout.cpp
 	source/Game/Game.h
 	source/Game/Game.cpp
 	source/Game/Tank.h

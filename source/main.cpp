@@ -103,7 +103,10 @@ int main(int argc, char** argv)
 
         auto tex = resourceManager.LoadTexture("DefaultTexture", "resources\\textures\\map_16x16.png");
 
-        auto pSprite = resourceManager.LoadSprite("NewSprite", "DefaultTexture", "SpriteShader", 50, 100);
+        std::vector<std::string> subTexturesNames = { "block", "topBlock", "bottomBlock", "leftBlock", "rightBlock", "topLeftBlock", "topRightBlock", "bottomLeftBlock", "bottomRightBlock", "beton"};
+        auto pTextureAtlas = resourceManager.LoadTextureAtlas("DefaultTextureAtlas", "resources\\textures\\map_16x16.png", std::move(subTexturesNames), 16, 16);
+
+        auto pSprite = resourceManager.LoadSprite("NewSprite", "DefaultTextureAtlas", "SpriteShader", 100, 100, "beton");
         pSprite->SetPosition(glm::vec2(300, 100));
 
         // передача в память видеокарты информации (позиция, цвет) для созданных шейдеров

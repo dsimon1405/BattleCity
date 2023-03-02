@@ -8,8 +8,9 @@
 
 namespace Renderer
 {
-	Renderer::Sprite::Sprite(std::shared_ptr<Texture2D> pTexture,
+	Sprite::Sprite(std::shared_ptr<Texture2D> pTexture,
 		std::shared_ptr<ShaderProgram> pShaderProgram,
+		std::string initialSubTexture,
 		const glm::vec2& position,
 		const glm::vec2& size,
 		const float rotation)
@@ -34,16 +35,18 @@ namespace Renderer
 				0.f, 0.f
 		};
 
+		auto subTexture = m_pTexture->GetSubTexture(std::move(initialSubTexture));
+
 		const GLfloat textureCoords[] =
 		{
 			//   U    V
-				0.f, 0.f,
-				0.f, 1.f,
-				1.f, 1.f,
+				subTexture.leftBottomUV.x, subTexture.leftBottomUV.y,
+				subTexture.leftBottomUV.x, subTexture.rightTopUV.y,
+				subTexture.rightTopUV.x, subTexture.rightTopUV.y,
 
-				1.f, 1.f,
-				1.f, 0.f,
-				0.f, 0.f
+				subTexture.rightTopUV.x, subTexture.rightTopUV.y,
+				subTexture.rightTopUV.x, subTexture.leftBottomUV.y,
+				subTexture.leftBottomUV.x, subTexture.leftBottomUV.y
 		};
 
 		glGenVertexArrays(1, &m_VAO);
@@ -66,7 +69,7 @@ namespace Renderer
 		glBindVertexArray(0);
 	}
 
-	Renderer::Sprite::~Sprite()
+	Sprite::~Sprite()
 	{
 		// особождается память видеокарты
 		glDeleteBuffers(1, &m_vertexCoordsVBO);
@@ -96,17 +99,17 @@ namespace Renderer
 		glBindVertexArray(0);
 	}
 
-	void Renderer::Sprite::SetPosition(const glm::vec2& position)
+	void Sprite::SetPosition(const glm::vec2& position)
 	{
 		m_position = position;
 	}
 
-	void Renderer::Sprite::SetSize(const glm::vec2& size)
+	void Sprite::SetSize(const glm::vec2& size)
 	{
 		m_size = size;
 	}
 
-	void Renderer::Sprite::SetRotation(const float rotation)
+	void Sprite::SetRotation(const float rotation)
 	{
 		m_rotation = rotation;
 	}

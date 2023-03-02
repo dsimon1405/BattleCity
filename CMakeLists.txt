@@ -16,6 +16,8 @@ add_executable(${PROJECT_NAME}
 	source/Renderer/Sprite.h
 	source/Renderer/AnimatedSprite.h
 	source/Renderer/AnimatedSprite.cpp
+	source/Game/Game.h
+	source/Game/Game.cpp
 )
 
 target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)

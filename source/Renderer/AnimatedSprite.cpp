@@ -6,8 +6,13 @@
 
 namespace Renderer
 {
-	AnimatedSprite::AnimatedSprite(std::shared_ptr<Texture2D> pTexture, std::string initialSubTexture, std::shared_ptr<ShaderProgram> pShaderProgram, const glm::vec2& position, const glm::vec2& size, const float rotation)
-		: Sprite(std::move(pTexture), std::move(initialSubTexture), std::move(pShaderProgram), position, size, rotation)
+	AnimatedSprite::AnimatedSprite(std::shared_ptr<Texture2D> pTexture,
+								   std::string initialSubTexture,
+								   std::shared_ptr<ShaderProgram> pShaderProgram,
+								   const glm::vec2& position,
+								   const glm::vec2& size,
+								   const float rotation)
+								   : Sprite(std::move(pTexture), std::move(initialSubTexture), std::move(pShaderProgram), position, size, rotation)
 	{
 		m_pCurrentAnimationDuration = m_statesMap.end();
 	}
@@ -25,7 +30,7 @@ namespace Renderer
 
 			const GLfloat textureCoords[] =
 			{
-				//   U    V
+				//				 U						  V
 					subTexture.leftBottomUV.x, subTexture.leftBottomUV.y,
 					subTexture.leftBottomUV.x, subTexture.rightTopUV.y,
 					subTexture.rightTopUV.x, subTexture.rightTopUV.y,

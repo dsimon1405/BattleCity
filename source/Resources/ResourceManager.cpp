@@ -12,10 +12,24 @@
 #define STBI_ONLY_PNG
 #include "stb_image.h"
 
-ResourceManager::ResourceManager(const std::string& executablePath)
+ResourceManager::ShaderProgramsMap ResourceManager::m_shaderPrograms;
+ResourceManager::TexturesMap ResourceManager::m_textures;
+ResourceManager::SpritesMap ResourceManager::m_sprites;
+ResourceManager::AnimatedSpritesMap ResourceManager::m_animatedSprites;
+std::string ResourceManager::m_path;
+
+void ResourceManager::SetExecutablePath(const std::string& executablePath)
 {
 	size_t slashIndex = executablePath.find_last_of("/\\");
-	mapPath = executablePath.substr(0, slashIndex);
+	m_path = executablePath.substr(0, slashIndex);
+}
+
+void ResourceManager::UnloadAllResources()
+{
+	m_shaderPrograms.clear();
+	m_textures.clear();
+	m_sprites.clear();
+	m_animatedSprites.clear();
 }
 
 std::shared_ptr<Renderer::ShaderProgram> ResourceManager::LoadShaders(const std::string& shaderName, const std::string& vertexPath, const std::string& fragmentPath)
@@ -61,7 +75,7 @@ std::shared_ptr<Renderer::Texture2D> ResourceManager::LoadTexture(const std::str
 		width = 0,
 		height = 0;
 	stbi_set_flip_vertically_on_load(true);
-	unsigned char* pixels = stbi_load(std::string(mapPath + "\\" + texturePath).c_str(), &width, &height, &channels, 0);
+	unsigned char* pixels = stbi_load(std::string(m_path + "\\" + texturePath).c_str(), &width, &height, &channels, 0);
 	if (!pixels)
 	{
 		std::cerr << "Can't load image: " << texturePath << std::endl;
@@ -120,7 +134,7 @@ std::shared_ptr<Renderer::AnimatedSprite> ResourceManager::LoadAnimatedSprite(co
 	auto pShader = GetShaderProgram(shaderName);
 	if (!pTexture) std::cerr << "Can't find the shader program: " << shaderName << "for the sprite: " << spriteName << std::endl;
 
-	std::shared_ptr<Renderer::AnimatedSprite> newSprite = m_animatedSprites .emplace(spriteName, std::make_shared<Renderer::AnimatedSprite>(pTexture, subTextureName, pShader, glm::vec2(0.f, 0.f), glm::vec2(spriteWidth, spriteHeight))).first->second;
+	std::shared_ptr<Renderer::AnimatedSprite> newSprite = m_animatedSprites.emplace(spriteName, std::make_shared<Renderer::AnimatedSprite>(pTexture, subTextureName, pShader, glm::vec2(0.f, 0.f), glm::vec2(spriteWidth, spriteHeight))).first->second;
 
 	return newSprite;
 }
@@ -164,10 +178,10 @@ std::shared_ptr<Renderer::Texture2D> ResourceManager::LoadTextureAtlas(std::stri
 	return pTexture;
 }
 
-std::string ResourceManager::GetFileString(const std::string& relativeFilePath) const
+std::string ResourceManager::GetFileString(const std::string& relativeFilePath)
 {
 	std::ifstream file;
-	file.open(mapPath + "\\" + relativeFilePath.c_str(), std::ios::binary);
+	file.open(m_path + "\\" + relativeFilePath.c_str(), std::ios::binary);
 	if (!file.is_open())
 	{
 		std::cerr << "Faild to open file: " << relativeFilePath << std::endl;

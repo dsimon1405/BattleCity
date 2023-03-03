@@ -42,6 +42,8 @@ public:
 
 	static std::shared_ptr<RenderEngine::Texture2D> LoadTextureAtlas(std::string textureName, std::string texturePath, std::vector<std::string> subTextures, const unsigned int subTextureWidth, const unsigned int subTextureWHeight);
 
+	static bool loadJSONResourses(const std::string& JSONPath);
+
 private:
 	using ShaderProgramsMap = std::map<const std::string, std::shared_ptr<RenderEngine::ShaderProgram>>;
 	static ShaderProgramsMap m_shaderPrograms;

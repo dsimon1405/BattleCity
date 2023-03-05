@@ -33,16 +33,18 @@ public:
 	static std::shared_ptr<RenderEngine::Texture2D> GetTexture(const std::string& textureName);
 
 	static std::shared_ptr<RenderEngine::Sprite> LoadSprite(const std::string& spriteName, const std::string& textureName, const std::string& shaderName,
-			const unsigned int spriteWidth, const unsigned int spriteHeight, const std::string& subTextureName = "default");
+			const std::string& subTextureName = "default");
 	static std::shared_ptr<RenderEngine::Sprite> GetSprite(const std::string& spriteName);
 
 	static std::shared_ptr<RenderEngine::AnimatedSprite> LoadAnimatedSprite(const std::string& spriteName, const std::string& textureName, const std::string& shaderName,
-		const unsigned int spriteWidth, const unsigned int spriteHeight, const std::string& subTextureName = "default");
+		const std::string& subTextureName = "default");
 	static std::shared_ptr<RenderEngine::AnimatedSprite> GetAnimatedSprite(const std::string& spriteName);
 
 	static std::shared_ptr<RenderEngine::Texture2D> LoadTextureAtlas(std::string textureName, std::string texturePath, std::vector<std::string> subTextures, const unsigned int subTextureWidth, const unsigned int subTextureWHeight);
 
 	static bool loadJSONResourses(const std::string& JSONPath);
+
+	static const std::vector<std::vector<std::string>>& GetLevels() { return m_levels; }
 
 private:
 	using ShaderProgramsMap = std::map<const std::string, std::shared_ptr<RenderEngine::ShaderProgram>>;
@@ -56,6 +58,8 @@ private:
 
 	using AnimatedSpritesMap = std::map<const std::string, std::shared_ptr<RenderEngine::AnimatedSprite>>;
 	static AnimatedSpritesMap m_animatedSprites;
+
+	static std::vector<std::vector<std::string>> m_levels;
 
 	static std::string m_path;
 

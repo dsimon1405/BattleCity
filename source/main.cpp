@@ -9,15 +9,33 @@
 #include "Resources//ResourceManager.h"
 #include "Renderer/Renderer.h"
 
-glm::ivec2 g_windowSize(640, 480);
-Game g_game(g_windowSize);
+glm::ivec2 g_windowSize(13 * 16, 14 * 16);
+std::unique_ptr<Game> g_game = std::make_unique<Game>(g_windowSize);
 
 
 void glfwWindowSizeCallback(GLFWwindow* pWindow, int width, int height)
 {
     g_windowSize.x = width;
     g_windowSize.y = height;
-    RenderEngine::Renderer::SetViewPort(g_windowSize.x, g_windowSize.y);
+
+    const float map_aspect_ratio = 13.f / 14.f;
+    unsigned int viewPortWidth = g_windowSize.x;
+    unsigned int viewPortHeight = g_windowSize.y;
+    unsigned int viewPortLeftOffset = 0;
+    unsigned int viewPortBottomOffset = 0;
+
+    if (static_cast<float>(g_windowSize.x / g_windowSize.y) > map_aspect_ratio)
+    {
+        viewPortWidth = static_cast<unsigned int>(g_windowSize.y * map_aspect_ratio);
+        viewPortLeftOffset = (g_windowSize.x - viewPortWidth) / 2;
+    }
+    else
+    {
+        viewPortHeight = static_cast<unsigned int>(g_windowSize.x / map_aspect_ratio);
+        viewPortBottomOffset = (g_windowSize.y - viewPortWidth) / 2;
+    }
+
+    RenderEngine::Renderer::SetViewPort(viewPortWidth, viewPortHeight, viewPortLeftOffset, viewPortBottomOffset);
 }
 
 void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int mode)
@@ -26,7 +44,7 @@ void glfwKeyCallback(GLFWwindow* pWindow, int key, int scancode, int action, int
     {
         glfwSetWindowShouldClose(pWindow, GL_TRUE);
     }
-    g_game.SetKey(key, action);
+    g_game->SetKey(key, action);
 }
 
 int main(int argc, char** argv)
@@ -71,7 +89,7 @@ int main(int argc, char** argv)
     {
         ResourceManager::SetExecutablePath(argv[0]);
         
-        g_game.Init();
+        g_game->Init();
 
         auto lastTime = std::chrono::high_resolution_clock::now();
 
@@ -84,16 +102,16 @@ int main(int argc, char** argv)
             auto currentTime = std::chrono::high_resolution_clock::now();
             uint64_t duration = std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastTime).count();
             lastTime = currentTime;
-            g_game.Update(duration);
+            g_game->Update(duration);
 
             RenderEngine::Renderer::Clear();
 
-            g_game.Render();
+            g_game->Render();
 
             /* Swap front and back buffers */
             glfwSwapBuffers(pWindow);
-}
-
+        }
+        g_game = nullptr;
         ResourceManager::UnloadAllResources();
     }
 
